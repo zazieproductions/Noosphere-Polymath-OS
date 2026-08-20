@@ -1,0 +1,914 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creative Genius Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&family=Inter:wght@300..700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255,255,255,0.1) transparent;
+        }
+        *::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        *::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        *::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #070712;
+            color: #fff;
+            overflow-x: hidden;
+        }
+        .font-grotesk {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .bg-glow {
+            background:
+                radial-gradient(ellipse 80% 60% at 20% 20%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse 60% 50% at 80% 30%, rgba(6, 182, 212, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse 60% 60% at 50% 80%, rgba(236, 72, 153, 0.08) 0%, transparent 50%),
+                #070712;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .glass-hover:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.12);
+            transform: translateY(-2px);
+            transition: all 0.3s ease;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #a78bfa, #06b6d4, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 16px;
+            border-radius: 12px;
+            color: rgba(255, 255, 255, 0.6);
+            transition: all 0.2s ease;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        .nav-link:hover {
+            background: rgba(139, 92, 246, 0.1);
+            color: #fff;
+        }
+        .nav-link.active {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(6, 182, 212, 0.1));
+            color: #fff;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+        }
+        .nav-link i {
+            width: 20px;
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        .pulse-dot {
+            position: relative;
+        }
+        .pulse-dot::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            70% {
+                transform: scale(2);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .kpi-card {
+            position: relative;
+            overflow: hidden;
+        }
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #8b5cf6, #06b6d4);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .kpi-card:hover::before {
+            opacity: 1;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 280px;
+        }
+
+        .fade-in {
+            opacity: 0;
+            animation: fadeIn 0.8s ease forwards;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .typewriter-cursor::after {
+            content: '|';
+            margin-left: 2px;
+            animation: blink 0.8s infinite;
+            color: #8b5cf6;
+        }
+        @keyframes blink {
+            0%, 50% {
+                opacity: 1;
+            }
+            51%, 100% {
+                opacity: 0;
+            }
+        }
+
+        .progress-bar {
+            height: 6px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.06);
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.8s ease;
+        }
+
+        .stat-ring {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sparkline {
+            width: 60px;
+            height: 24px;
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -1000px 0;
+            }
+            100% {
+                background-position: 1000px 0;
+            }
+        }
+
+        .project-row {
+            transition: background 0.2s ease;
+        }
+        .project-row:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 220px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-glow min-h-screen">
+
+    <!-- ========== HEADER ========== -->
+    <header class="fixed top-0 left-0 right-0 z-50 h-16 bg-[#070712]/90 backdrop-blur-xl border-b border-white/[0.06] flex items-center px-4 lg:px-6">
+        <div class="flex items-center gap-4 w-full">
+            <!-- Hamburger (mobile) -->
+            <button id="menuBtn" class="lg:hidden text-white/60 hover:text-white text-xl p-2">
+                <i class="fas fa-bars"></i>
+            </button>
+
+            <!-- Logo -->
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-purple-500 to-cyan-400 flex items-center justify-center text-sm font-bold">
+                    <i class="fas fa-lightbulb text-white"></i>
+                </div>
+                <span class="font-grotesk font-bold text-lg tracking-tight">
+                    <span class="gradient-text">CREATIVE</span>
+                    <span class="text-white/30">//</span>
+                    <span class="gradient-text">GENIUS</span>
+                </span>
+            </div>
+
+            <!-- Search -->
+            <div class="hidden md:flex items-center flex-1 max-w-md mx-auto">
+                <div class="relative w-full">
+                    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-white/30 text-sm"></i>
+                    <input type="text" placeholder="Search campaigns, assets, insights..."
+                    class="w-full bg-white/[0.04] border border-white/[0.06] rounded-full py-2 pl-10 pr-4 text-sm text-white placeholder-white/30 focus:outline-none focus:border-purple-400/40 focus:ring-2 focus:ring-purple-400/20 transition-all">
+                </div>
+            </div>
+
+            <!-- Right icons -->
+            <div class="flex items-center gap-3 ml-auto">
+                <div class="hidden sm:flex items-center gap-1.5 bg-white/[0.04] border border-white/[0.06] rounded-full px-3 py-1.5 text-xs text-white/70">
+                    <span class="pulse-dot w-2 h-2 bg-emerald-400 rounded-full"></span>
+                    <span class="font-medium">Live</span>
+                </div>
+                <button class="relative text-white/60 hover:text-white text-xl p-2 transition-colors">
+                    <i class="fas fa-bell"></i>
+                    <span class="absolute top-1 right-1 w-2 h-2 bg-pink-500 rounded-full"></span>
+                </button>
+                <div class="flex items-center gap-2 ml-1 bg-white/[0.04] border border-white/[0.06] rounded-full pl-0.5 pr-3 py-0.5">
+                    <div class="w-7 h-7 rounded-full bg-gradient-to-tr from-purple-500 to-cyan-400 flex items-center justify-center text-xs font-bold">
+                        JG
+                    </div>
+                    <span class="text-sm font-medium text-white/80 hidden sm:block">Jordan</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ========== SIDEBAR ========== -->
+    <aside id="sidebar" class="fixed top-16 left-0 bottom-0 w-[240px] hidden lg:flex flex-col bg-[#070712]/95 backdrop-blur-xl border-r border-white/[0.06] p-4 z-40">
+        <nav class="flex-1 space-y-1">
+            <a href="#" class="nav-link active"><i class="fas fa-th-large"></i>Dashboard</a>
+            <a href="#" class="nav-link"><i class="fas fa-bullhorn"></i>Campaigns</a>
+            <a href="#" class="nav-link"><i class="fas fa-folder-open"></i>Projects</a>
+            <a href="#" class="nav-link"><i class="fas fa-chart-bar"></i>Analytics</a>
+            <a href="#" class="nav-link"><i class="fas fa-users"></i>Audience</a>
+            <a href="#" class="nav-link"><i class="fas fa-file-alt"></i>Content</a>
+            <a href="#" class="nav-link"><i class="fas fa-copyright"></i>Brand Assets</a>
+            <a href="#" class="nav-link"><i class="fas fa-cog"></i>Settings</a>
+        </nav>
+
+        <!-- Usage meter -->
+        <div class="mt-auto p-4 rounded-xl bg-white/[0.03] border border-white/[0.06]">
+            <div class="flex justify-between items-center mb-2 text-xs">
+                <span class="text-white/50">Creative Credits</span>
+                <span class="text-white/80 font-semibold">82%</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-bar-fill w-[82%] bg-gradient-to-r from-purple-500 to-cyan-400"></div>
+            </div>
+            <p class="text-[10px] text-white/30 mt-2">1,240 / 1,500 credits used</p>
+        </div>
+    </aside>
+
+    <!-- Mobile sidebar overlay -->
+    <div id="mobileOverlay" class="fixed inset-0 bg-black/60 z-30 lg:hidden hidden"></div>
+    <aside id="mobileSidebar" class="fixed top-16 left-0 bottom-0 w-[240px] lg:hidden bg-[#070712]/95 backdrop-blur-xl border-r border-white/[0.06] p-4 z-40 -translate-x-full transition-transform duration-300">
+        <nav class="flex-1 space-y-1">
+            <a href="#" class="nav-link active"><i class="fas fa-th-large"></i>Dashboard</a>
+            <a href="#" class="nav-link"><i class="fas fa-bullhorn"></i>Campaigns</a>
+            <a href="#" class="nav-link"><i class="fas fa-folder-open"></i>Projects</a>
+            <a href="#" class="nav-link"><i class="fas fa-chart-bar"></i>Analytics</a>
+            <a href="#" class="nav-link"><i class="fas fa-users"></i>Audience</a>
+            <a href="#" class="nav-link"><i class="fas fa-file-alt"></i>Content</a>
+            <a href="#" class="nav-link"><i class="fas fa-copyright"></i>Brand Assets</a>
+            <a href="#" class="nav-link"><i class="fas fa-cog"></i>Settings</a>
+        </nav>
+    </aside>
+
+    <!-- ========== MAIN CONTENT ========== -->
+    <main class="lg:ml-[240px] pt-16 min-h-screen p-4 md:p-6 lg:p-8">
+
+        <!-- Page Header -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+            <div>
+                <h1 class="font-grotesk text-2xl md:text-3xl font-bold tracking-tight">Creative Dashboard</h1>
+                <p class="text-white/40 text-sm mt-1">Welcome back, Jordan. Your creative energy is <span class="text-emerald-400 font-medium">exceptional</span> today.</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <button class="px-4 py-2 rounded-full bg-white/[0.05] border border-white/[0.08] text-sm text-white/70 hover:bg-white/[0.08] transition-colors">
+                    <i class="fas fa-file-export mr-2"></i>Export
+                </button>
+                <button class="px-4 py-2 rounded-full bg-gradient-to-r from-purple-500 to-cyan-400 text-sm font-semibold text-white hover:opacity-90 transition-opacity shadow-lg shadow-purple-500/20">
+                    <i class="fas fa-plus mr-2"></i>New Project
+                </button>
+            </div>
+        </div>
+
+        <!-- ====== KPI CARDS ====== -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-6 mb-6">
+
+            <!-- Card 1 -->
+            <div class="kpi-card glass glass-hover p-5 fade-in" style="animation-delay:0.05s">
+                <div class="flex items-start justify-between mb-3">
+                    <div class="w-10 h-10 rounded-xl bg-purple-500/20 flex items-center justify-center text-purple-300">
+                        <i class="fas fa-palette text-lg"></i>
+                    </div>
+                    <span class="text-xs font-medium text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded-full">+8.2%</span>
+                </div>
+                <p class="text-3xl font-bold font-grotesk">87.5</p>
+                <p class="text-white/40 text-sm mt-1">Creative Output Index</p>
+                <div class="mt-3">
+                    <svg class="sparkline" viewBox="0 0 60 24" fill="none">
+                        <path d="M0,20 Q5,18 10,15 T20,12 T30,14 T40,8 T50,6 T60,3" stroke="#a78bfa" stroke-width="1.5" stroke-linecap="round"/>
+                        <path d="M0,20 Q5,18 10,15 T20,12 T30,14 T40,8 T50,6 T60,3 L60,24 L0,24 Z" fill="url(#spark1)" opacity="0.3"/>
+                        <defs><linearGradient id="spark1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#a78bfa"/><stop offset="100%" stop-color="transparent"/></linearGradient></defs>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="kpi-card glass glass-hover p-5 fade-in" style="animation-delay:0.1s">
+                <div class="flex items-start justify-between mb-3">
+                    <div class="w-10 h-10 rounded-xl bg-cyan-500/20 flex items-center justify-center text-cyan-300">
+                        <i class="fas fa-chart-line text-lg"></i>
+                    </div>
+                    <span class="text-xs font-medium text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded-full">+12.3%</span>
+                </div>
+                <p class="text-3xl font-bold font-grotesk">12.4M</p>
+                <p class="text-white/40 text-sm mt-1">Brand Reach</p>
+                <div class="mt-3">
+                    <svg class="sparkline" viewBox="0 0 60 24" fill="none">
+                        <path d="M0,18 Q5,14 10,16 T20,10 T30,12 T40,5 T50,8 T60,2" stroke="#22d3ee" stroke-width="1.5" stroke-linecap="round"/>
+                        <path d="M0,18 Q5,14 10,16 T20,10 T30,12 T40,5 T50,8 T60,2 L60,24 L0,24 Z" fill="url(#spark2)" opacity="0.3"/>
+                        <defs><linearGradient id="spark2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#22d3ee"/><stop offset="100%" stop-color="transparent"/></linearGradient></defs>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="kpi-card glass glass-hover p-5 fade-in" style="animation-delay:0.15s">
+                <div class="flex items-start justify-between mb-3">
+                    <div class="w-10 h-10 rounded-xl bg-pink-500/20 flex items-center justify-center text-pink-300">
+                        <i class="fas fa-heart text-lg"></i>
+                    </div>
+                    <span class="text-xs font-medium text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded-full">+2.1%</span>
+                </div>
+                <p class="text-3xl font-bold font-grotesk">5.8%</p>
+                <p class="text-white/40 text-sm mt-1">Engagement Rate</p>
+                <div class="mt-3">
+                    <svg class="sparkline" viewBox="0 0 60 24" fill="none">
+                        <path d="M0,20 Q5,17 10,18 T20,14 T30,15 T40,10 T50,11 T60,6" stroke="#ec4899" stroke-width="1.5" stroke-linecap="round"/>
+                        <path d="M0,20 Q5,17 10,18 T20,14 T30,15 T40,10 T50,11 T60,6 L60,24 L0,24 Z" fill="url(#spark3)" opacity="0.3"/>
+                        <defs><linearGradient id="spark3" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ec4899"/><stop offset="100%" stop-color="transparent"/></linearGradient></defs>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Card 4 -->
+            <div class="kpi-card glass glass-hover p-5 fade-in" style="animation-delay:0.2s">
+                <div class="flex items-start justify-between mb-3">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-300">
+                        <i class="fas fa-chart-pie text-lg"></i>
+                    </div>
+                    <span class="text-xs font-medium text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded-full">+18.5%</span>
+                </div>
+                <p class="text-3xl font-bold font-grotesk">384%</p>
+                <p class="text-white/40 text-sm mt-1">Campaign ROI</p>
+                <div class="mt-3">
+                    <svg class="sparkline" viewBox="0 0 60 24" fill="none">
+                        <path d="M0,22 Q5,18 10,17 T20,12 T30,14 T40,7 T50,5 T60,2" stroke="#10b981" stroke-width="1.5" stroke-linecap="round"/>
+                        <path d="M0,22 Q5,18 10,17 T20,12 T30,14 T40,7 T50,5 T60,2 L60,24 L0,24 Z" fill="url(#spark4)" opacity="0.3"/>
+                        <defs><linearGradient id="spark4" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#10b981"/><stop offset="100%" stop-color="transparent"/></linearGradient></defs>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== CHARTS ROW 1 ====== -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
+
+            <!-- Main Trend Chart -->
+            <div class="lg:col-span-8 glass p-5 md:p-6 fade-in" style="animation-delay:0.25s">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h3 class="font-grotesk font-semibold text-lg">Creative Performance</h3>
+                        <p class="text-white/30 text-xs mt-0.5">12-week trend · Brand Impact & Creative Output</p>
+                    </div>
+                    <div class="flex items-center gap-4 text-xs text-white/50">
+                        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-purple-400"></span>Creative Output</span>
+                        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-cyan-400"></span>Brand Impact</span>
+                    </div>
+                </div>
+                <div class="chart-container !h-[300px]">
+                    <canvas id="trendChart"></canvas>
+                </div>
+            </div>
+
+            <!-- AI Creative Score -->
+            <div class="lg:col-span-4 glass p-5 md:p-6 fade-in flex flex-col items-center justify-center" style="animation-delay:0.3s">
+                <div class="text-center mb-2">
+                    <h3 class="font-grotesk font-semibold text-lg">AI Creative Score</h3>
+                    <p class="text-white/30 text-xs mt-0.5">Overall creativity assessment</p>
+                </div>
+                <div class="relative w-[160px] h-[160px] mt-4">
+                    <canvas id="aiScoreChart"></canvas>
+                    <div class="absolute inset-0 flex items-center justify-center flex-col">
+                        <span class="font-grotesk text-4xl font-bold gradient-text">87</span>
+                        <span class="text-white/40 text-xs mt-1">/100</span>
+                    </div>
+                </div>
+                <div class="mt-6 w-full space-y-3">
+                    <div>
+                        <div class="flex justify-between text-xs text-white/50 mb-1"><span>Originality</span><span class="text-white/80 font-medium">92%</span></div>
+                        <div class="progress-bar"><div class="progress-bar-fill w-[92%]" style="background:linear-gradient(90deg,#8b5cf6,#06b6d4)"></div></div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-xs text-white/50 mb-1"><span>Emotional Impact</span><span class="text-white/80 font-medium">78%</span></div>
+                        <div class="progress-bar"><div class="progress-bar-fill w-[78%]" style="background:linear-gradient(90deg,#8b5cf6,#ec4899)"></div></div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-xs text-white/50 mb-1"><span>Market Fit</span><span class="text-white/80 font-medium">85%</span></div>
+                        <div class="progress-bar"><div class="progress-bar-fill w-[85%]" style="background:linear-gradient(90deg,#06b6d4,#10b981)"></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== CHARTS ROW 2 ====== -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+
+            <!-- Radar Chart -->
+            <div class="glass p-5 md:p-6 fade-in" style="animation-delay:0.35s">
+                <h3 class="font-grotesk font-semibold text-lg">Creative Pillars</h3>
+                <p class="text-white/30 text-xs mt-0.5">Dimension breakdown</p>
+                <div class="chart-container !h-[220px] mt-4">
+                    <canvas id="radarChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Donut Chart -->
+            <div class="glass p-5 md:p-6 fade-in" style="animation-delay:0.4s">
+                <h3 class="font-grotesk font-semibold text-lg">Channel Distribution</h3>
+                <p class="text-white/30 text-xs mt-0.5">Budget allocation by platform</p>
+                <div class="chart-container !h-[220px] mt-4">
+                    <canvas id="donutChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Bar Chart -->
+            <div class="glass p-5 md:p-6 fade-in md:col-span-2 lg:col-span-1" style="animation-delay:0.45s">
+                <h3 class="font-grotesk font-semibold text-lg">Weekly Production</h3>
+                <p class="text-white/30 text-xs mt-0.5">Creative assets created</p>
+                <div class="chart-container !h-[220px] mt-4">
+                    <canvas id="barChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== AI INSIGHTS + PROJECTS ====== -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+            <!-- AI Insights -->
+            <div class="lg:col-span-5 glass p-5 md:p-6 fade-in" style="animation-delay:0.5s">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-grotesk font-semibold text-lg flex items-center gap-2">
+                        <i class="fas fa-robot text-purple-400"></i> Muse AI Insights
+                    </h3>
+                    <span class="text-[10px] bg-purple-500/20 text-purple-300 px-2 py-1 rounded-full font-medium">LIVE</span>
+                </div>
+                <div class="bg-white/[0.02] border border-white/[0.04] rounded-xl p-4 min-h-[180px]">
+                    <p id="typewriter" class="text-sm text-white/70 leading-relaxed typewriter-cursor"></p>
+                </div>
+                <div class="mt-4 space-y-3">
+                    <div class="flex items-start gap-3 p-3 rounded-xl bg-emerald-400/[0.04] border border-emerald-400/[0.06]">
+                        <i class="fas fa-trending-up text-emerald-400 mt-1"></i>
+                        <div>
+                            <p class="text-xs text-white/40">Top Opportunity</p>
+                            <p class="text-sm text-white/80">Short-form video engagement is up 45% — scale your reels strategy.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3 p-3 rounded-xl bg-amber-400/[0.04] border border-amber-400/[0.06]">
+                        <i class="fas fa-exclamation-triangle text-amber-400 mt-1"></i>
+                        <div>
+                            <p class="text-xs text-white/40">Watch Out</p>
+                            <p class="text-sm text-white/80">Creative fatigue detected in "Product X" — consider refreshing assets.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Creative Projects -->
+            <div class="lg:col-span-7 glass p-5 md:p-6 fade-in" style="animation-delay:0.55s">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-grotesk font-semibold text-lg">Creative Projects</h3>
+                    <button class="text-xs text-purple-300 hover:text-purple-200 transition-colors flex items-center gap-1">
+                        View all <i class="fas fa-arrow-right text-xs"></i>
+                    </button>
+                </div>
+                <div class="space-y-2">
+                    <!-- Project row -->
+                    <div class="project-row flex items-center gap-4 p-3 rounded-xl">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-tr from-purple-500/30 to-cyan-400/30 flex items-center justify-center text-sm font-bold text-white/90">PA</div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-sm font-medium text-white/85 truncate">Project Aurora</span>
+                                <span class="text-[10px] text-purple-300 bg-purple-400/10 px-2 py-0.5 rounded-full">In Progress</span>
+                            </div>
+                            <div class="progress-bar"><div class="progress-bar-fill w-[85%]" style="background:linear-gradient(90deg,#8b5cf6,#06b6d4)"></div></div>
+                            <div class="flex justify-between mt-1 text-[10px] text-white/30">
+                                <span>Brand Campaign · 35 assets</span>
+                                <span>85%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Project row -->
+                    <div class="project-row flex items-center gap-4 p-3 rounded-xl">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-tr from-pink-500/30 to-amber-400/30 flex items-center justify-center text-sm font-bold text-white/90">NL</div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-sm font-medium text-white/85 truncate">Nova Launch</span>
+                                <span class="text-[10px] text-cyan-300 bg-cyan-400/10 px-2 py-0.5 rounded-full">In Progress</span>
+                            </div>
+                            <div class="progress-bar"><div class="progress-bar-fill w-[60%]" style="background:linear-gradient(90deg,#06b6d4,#10b981)"></div></div>
+                            <div class="flex justify-between mt-1 text-[10px] text-white/30">
+                                <span>Product Launch · 18 assets</span>
+                                <span>60%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Project row -->
+                    <div class="project-row flex items-center gap-4 p-3 rounded-xl">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-tr from-emerald-500/30 to-purple-400/30 flex items-center justify-center text-sm font-bold text-white/90">SR</div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-sm font-medium text-white/85 truncate">Stellar Rebrand</span>
+                                <span class="text-[10px] text-amber-300 bg-amber-400/10 px-2 py-0.5 rounded-full">Planning</span>
+                            </div>
+                            <div class="progress-bar"><div class="progress-bar-fill w-[30%]" style="background:linear-gradient(90deg,#f59e0b,#ec4899)"></div></div>
+                            <div class="flex justify-between mt-1 text-[10px] text-white/30">
+                                <span>Rebranding · 12 assets</span>
+                                <span>30%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Project row -->
+                    <div class="project-row flex items-center gap-4 p-3 rounded-xl">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-tr from-cyan-400/30 to-purple-500/30 flex items-center justify-center text-sm font-bold text-white/90">CC</div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-sm font-medium text-white/85 truncate">Cosmic Content</span>
+                                <span class="text-[10px] text-emerald-300 bg-emerald-400/10 px-2 py-0.5 rounded-full">Review</span>
+                            </div>
+                            <div class="progress-bar"><div class="progress-bar-fill w-[90%]" style="background:linear-gradient(90deg,#10b981,#22d3ee)"></div></div>
+                            <div class="flex justify-between mt-1 text-[10px] text-white/30">
+                                <span>Content Series · 24 assets</span>
+                                <span>90%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== TRENDING TAGS STRIP ====== -->
+        <div class="mt-6 glass p-4 fade-in" style="animation-delay:0.6s">
+            <div class="flex items-center gap-3 flex-wrap">
+                <span class="text-xs text-white/40 font-medium flex items-center gap-2">
+                    <i class="fas fa-fire text-orange-400"></i> Trending
+                </span>
+                <span class="text-xs bg-white/[0.04] border border-white/[0.06] rounded-full px-3 py-1 text-white/60">#GenerativeBranding</span>
+                <span class="text-xs bg-white/[0.04] border border-white/[0.06] rounded-full px-3 py-1 text-white/60">#ShortFormVideo</span>
+                <span class="text-xs bg-white/[0.04] border border-white/[0.06] rounded-full px-3 py-1 text-white/60">#UGCWave</span>
+                <span class="text-xs bg-white/[0.04] border border-white/[0.06] rounded-full px-3 py-1 text-white/60">#ImmersiveAds</span>
+                <span class="text-xs bg-white/[0.04] border border-white/[0.06] rounded-full px-3 py-1 text-white/60">#CreatorEconomy</span>
+                <span class="text-xs bg-white/[0.04] border border-white/[0.06] rounded-full px-3 py-1 text-white/60">#NostalgiaMarketing</span>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- ========== SCRIPTS ========== -->
+    <script>
+        // ===== MOBILE MENU =====
+        const menuBtn = document.getElementById('menuBtn');
+        const mobileSidebar = document.getElementById('mobileSidebar');
+        const mobileOverlay = document.getElementById('mobileOverlay');
+
+        function toggleMobileMenu() {
+            mobileSidebar.classList.toggle('-translate-x-full');
+            mobileSidebar.classList.toggle('translate-x-0');
+            mobileOverlay.classList.toggle('hidden');
+        }
+        menuBtn.addEventListener('click', toggleMobileMenu);
+        mobileOverlay.addEventListener('click', toggleMobileMenu);
+
+        // ===== CHART.JS THEME =====
+        Chart.defaults.color = 'rgba(255,255,255,0.4)';
+        Chart.defaults.borderColor = 'rgba(255,255,255,0.06)';
+        Chart.defaults.font.family = 'Inter, sans-serif';
+
+        // ===== TREND CHART =====
+        const trendCtx = document.getElementById('trendChart').getContext('2d');
+        new Chart(trendCtx, {
+            type: 'line',
+            data: {
+                labels: ['W1', 'W2', 'W3', 'W4', 'W5', 'W6', 'W7', 'W8', 'W9', 'W10', 'W11', 'W12'],
+                datasets: [{
+                    label: 'Creative Output',
+                    data: [45, 52, 48, 65, 58, 72, 80, 75, 88, 82, 90, 95],
+                    borderColor: '#a78bfa',
+                    backgroundColor: 'rgba(167,139,250,0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 3,
+                    pointBackgroundColor: '#a78bfa',
+                    pointBorderColor: '#a78bfa',
+                    borderWidth: 2.5,
+                }, {
+                    label: 'Brand Impact',
+                    data: [30, 35, 32, 45, 42, 55, 60, 58, 70, 72, 78, 85],
+                    borderColor: '#22d3ee',
+                    backgroundColor: 'rgba(34,211,238,0.06)',
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 3,
+                    pointBackgroundColor: '#22d3ee',
+                    pointBorderColor: '#22d3ee',
+                    borderWidth: 2.5,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(15,15,35,0.9)',
+                        borderColor: 'rgba(255,255,255,0.1)',
+                        borderWidth: 1,
+                        padding: 12,
+                        cornerRadius: 8,
+                        titleColor: '#fff',
+                        bodyColor: 'rgba(255,255,255,0.7)',
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: 'rgba(255,255,255,0.3)' }
+                    },
+                    y: {
+                        grid: { color: 'rgba(255,255,255,0.04)' },
+                        ticks: { color: 'rgba(255,255,255,0.3)', maxTicksLimit: 5 },
+                        max: 100,
+                    }
+                },
+                interaction: {
+                    intersect: false,
+                    mode: 'index',
+                }
+            }
+        });
+
+        // ===== AI SCORE GAUGE =====
+        const scoreCtx = document.getElementById('aiScoreChart').getContext('2d');
+        new Chart(scoreCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Score', 'Remaining'],
+                datasets: [{
+                    data: [87, 13],
+                    backgroundColor: [
+                        'rgba(139,92,246,0.8)',
+                        'rgba(255,255,255,0.04)'
+                    ],
+                    borderColor: 'rgba(0,0,0,0)',
+                    borderWidth: 0,
+                    borderRadius: 20,
+                    circumference: 360,
+                }]
+            },
+            options: {
+                responsive: false,
+                maintainAspectRatio: false,
+                cutout: '78%',
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { enabled: false },
+                }
+            }
+        });
+
+        // ===== RADAR CHART =====
+        const radarCtx = document.getElementById('radarChart').getContext('2d');
+        new Chart(radarCtx, {
+            type: 'radar',
+            data: {
+                labels: ['Originality', 'Emotion', 'Visual', 'Clarity', 'Engagement'],
+                datasets: [{
+                    label: 'Your Score',
+                    data: [85, 78, 92, 70, 88],
+                    borderColor: '#8b5cf6',
+                    backgroundColor: 'rgba(139,92,246,0.15)',
+                    pointBackgroundColor: '#a78bfa',
+                    pointBorderColor: '#fff',
+                    pointRadius: 4,
+                    borderWidth: 2,
+                }, {
+                    label: 'Industry Avg',
+                    data: [65, 60, 70, 72, 62],
+                    borderColor: 'rgba(255,255,255,0.15)',
+                    backgroundColor: 'rgba(255,255,255,0.02)',
+                    pointRadius: 2,
+                    borderWidth: 1,
+                    borderDash: [5, 5],
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } },
+                },
+                scales: {
+                    r: {
+                        angleLines: { color: 'rgba(255,255,255,0.06)' },
+                        grid: { color: 'rgba(255,255,255,0.06)' },
+                        pointLabels: { color: 'rgba(255,255,255,0.6)', font: { size: 11 } },
+                        ticks: {
+                            display: false,
+                            max: 100,
+                        }
+                    }
+                }
+            }
+        });
+
+        // ===== DONUT CHART =====
+        const donutCtx = document.getElementById('donutChart').getContext('2d');
+        new Chart(donutCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Social Media', 'Email', 'Paid Ads', 'Content Mktg', 'Events'],
+                datasets: [{
+                    data: [35, 25, 20, 15, 5],
+                    backgroundColor: [
+                        'rgba(139,92,246,0.8)',
+                        'rgba(6,182,212,0.8)',
+                        'rgba(236,72,153,0.8)',
+                        'rgba(245,158,11,0.8)',
+                        'rgba(16,185,129,0.8)',
+                    ],
+                    borderColor: 'rgba(0,0,0,0)',
+                    borderWidth: 2,
+                    borderRadius: 8,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '65%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            color: 'rgba(255,255,255,0.6)',
+                            font: { size: 11 },
+                            boxWidth: 10,
+                            padding: 10,
+                        }
+                    },
+                }
+            }
+        });
+
+        // ===== BAR CHART =====
+        const barCtx = document.getElementById('barChart').getContext('2d');
+        new Chart(barCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                datasets: [{
+                    label: 'Assets Created',
+                    data: [12, 19, 15, 24, 18, 8, 5],
+                    backgroundColor: [
+                        'rgba(139,92,246,0.6)',
+                        'rgba(139,92,246,0.7)',
+                        'rgba(139,92,246,0.5)',
+                        'rgba(139,92,246,0.8)',
+                        'rgba(139,92,246,0.6)',
+                        'rgba(139,92,246,0.4)',
+                        'rgba(139,92,246,0.3)',
+                    ],
+                    borderRadius: 8,
+                    borderSkipped: false,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: 'rgba(255,255,255,0.3)' }
+                    },
+                    y: {
+                        grid: { color: 'rgba(255,255,255,0.04)' },
+                        ticks: { color: 'rgba(255,255,255,0.3)', maxTicksLimit: 5 },
+                        suggestedMax: 30,
+                    }
+                }
+            }
+        });
+
+        // ===== TYPEWRITER EFFECT =====
+        const insights = [
+            "Your 'Summer Spark' campaign is 27% above engagement benchmarks. The visual storytelling approach is clearly resonating with Gen-Z audiences — keep the organic feel, drop the filters.",
+            "Warm color palettes are performing 3.2x better for your core audience in the 18-30 bracket. Consider shifting primary hero images toward amber-to-coral gradients.",
+            "Optimal posting window detected: 2-5pm on Thursdays yields the highest retention. Your audience's creative energy peaks mid-afternoon — retaliated content drives 41% more saves.",
+            "Watch out: Creative fatigue is developing on 'Product X'. The current iteration has been running for 3 weeks. Refresh with a new angle — try macro-photography style.",
+            "Your short-form video engagement is up 45% this week! The raw, behind-the-scenes clips are outperforming produced content. Keep the authenticity high."
+        ];
+
+        let insightIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        const typewriterEl = document.getElementById('typewriter');
+
+        function typeEffect() {
+            const current = insights[insightIndex];
+            if (isDeleting) {
+                charIndex--;
+                typewriterEl.textContent = current.substring(0, charIndex);
+            } else {
+                charIndex++;
+                typewriterEl.textContent = current.substring(0, charIndex);
+            }
+
+            let speed = isDeleting ? 15 : 40;
+
+            if (!isDeleting && charIndex === current.length) {
+                speed = 3500;
+                isDeleting = true;
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                insightIndex = (insightIndex + 1) % insights.length;
+                speed = 400;
+            }
+
+            setTimeout(typeEffect, speed);
+        }
+        typeEffect();
+
+        // ===== INITIAL FADE ANIMATIONS =====
+        // Trigger fade-in for cards visible on load
+        document.querySelectorAll('.fade-in').forEach((el) => {
+            el.style.opacity = '0';
+            el.style.animationPlayState = 'running';
+        });
+
+        // Reset animations
+        setTimeout(() => {
+            document.querySelectorAll('.fade-in').forEach((el) => {
+                el.style.opacity = '1';
+            });
+        }, 100);
+    </script>
+
+</body>
+</html>
