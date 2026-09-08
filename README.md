@@ -6,7 +6,7 @@
 
 A browser-based creative operations dashboard prototype, built with HTML, Tailwind CSS, and Chart.js to explore campaign metrics, project progress, and insight presentation.
 
-The current interface is branded **Creative Genius**. It brings performance trends, channel allocation, production activity, and project status into one screen—a concrete starting point for reviewing a creative workspace before committing to a data model or service architecture.
+ It brings performance trends, channel allocation, production activity, and project status into one screen—a concrete starting point for reviewing a creative workspace before committing to a data model or service architecture.
 
 > [!IMPORTANT]
 > This is a front-end demonstration, not a production application or an operating system. All metrics, project records, scores, and insights are hard-coded examples. The “AI” and “Live” labels describe the interface concept; there is no model inference, analytics integration, or real-time data connection.
